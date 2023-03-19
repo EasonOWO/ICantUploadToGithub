@@ -18,14 +18,14 @@ michan = pygame.image.load('Picture/channels4_profile.jpg')
 
 #usage: color.<the_color_you_want>
 class color:
-      red = (255, 0, 0)
-      green = (0, 255, 0)
-      blue = (0, 0, 255)
-      yellow = (255, 255, 0)
-      cyan = (0, 255, 255)
-      magenta = (255, 0, 255)
-      white = (255, 255, 255)
-      black = (0, 0, 0)
+    red = (255, 0, 0)
+    green = (0, 255, 0)
+    blue = (0, 0, 255)
+    yellow = (255, 255, 0)
+    cyan = (0, 255, 255)
+    magenta = (255, 0, 255)
+    white = (255, 255, 255)
+    black = (0, 0, 0)
 
 
 #move
@@ -84,6 +84,7 @@ run = True  #run the game or not
 dfont = pygame.font.SysFont("Arial", 30)
 
 while run:
+    pygame.time.Clock()
     pygame.time.delay(10)
     uiscreen.blit(background, (0, 0))
     for event in pygame.event.get():
@@ -113,7 +114,13 @@ while run:
         vely = vely * abs(maxv / (math.sqrt(velx**2 + vely**2)))
     x += velx
     y += vely
-
+    #prevent from going out
+    if(x>500 or x<0):
+        x -= velx
+        velx=-velx
+    if(y>500 or y<0):
+        y -= vely
+        vely=-vely
     #paint
     pygame.draw.circle(canvas, color.yellow, (x, y), R, R - 1)
 
@@ -121,12 +128,12 @@ while run:
     b_point = int(0)
 
     #UI
-    message = dfont.render('{0},{1}'.format(int(x - 250), int(-y + 250)), 1, color.cyan)  #text of location
+    message = dfont.render('{0},{1}'.format(int(x), int(y)), 1, color.cyan)  #text of location
     uiscreen.blit(message, (0, 0))
     winScreen.blit(canvas, (0, 0))
     winScreen.blit(uiscreen, (0, 0))
-        
-  #winScreen.blit(michan, (x, y))
+     
+    #winScreen.blit(michan, (x, y))
 
     pygame.display.update()
 pygame.quit()
