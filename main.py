@@ -77,7 +77,7 @@ y = int((S_H) / 2)  #position y
 velx = int(0)
 vely = int(0)
 maxv = int(2)
-acl = 0.1
+acl = 0.2
 backacl = 0.05
 time = 0  #time of game
 run = True  #run the game or not
@@ -125,6 +125,7 @@ while run:
   uiscreen.blit(message, (0, 0))
   winScreen.blit(canvas, (0, 0))
   winScreen.blit(uiscreen, (0, 0))
+
   #winScreen.blit(michan, (x, y))
 
   pygame.display.update()
