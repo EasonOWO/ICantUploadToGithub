@@ -2,7 +2,9 @@ import sys
 import pygame
 import numpy as np
 import math
-import classes
+import keyboard
+import color
+import player
 
 #the start of pygame
 pygame.init()
@@ -17,16 +19,6 @@ michan = pygame.image.load('Picture/channels4_profile.jpg')
 #michan.convert()
 
 
-#usage: color.<the_color_you_want>
-class color:
-    red = (255, 0, 0)
-    green = (0, 255, 0)
-    blue = (0, 0, 255)
-    yellow = (255, 255, 0)
-    cyan = (0, 255, 255)
-    magenta = (255, 0, 255)
-    white = (255, 255, 255)
-    black = (0, 0, 0)
 
 #########################################################player
 class player:
@@ -39,52 +31,53 @@ class player:
         self.go_down = go_down
         self.go_left = go_left
         self.go_right = go_right
-    def move_input(keys):
+
+    def move_input(self, keys):
         aclx = 0
         acly = 0
-        if keys[self.go_left] and x > 0:
+        if keys[self.go_left] and self.x > 0:
             aclx = -acl
     
-        if keys[self.go_right] and x < 500:
+        if keys[self.go_right] and self.x < 500:
             aclx = acl
     
-        if keys[self.go_up] and y > 0:
+        if keys[self.go_up] and self.y > 0:
             acly = -acl
     
-        if keys[pygame.go_down] and y < 500:
+        if keys[self.go_down] and self.y < 500:
             acly = acl
     
         if (aclx**2 + acly**2 > acl * acl):#單位向量
             aclx *= abs(acl / (math.sqrt(aclx**2 + acly**2)))
             acly *= abs(acl / (math.sqrt(aclx**2 + acly**2)))
         return aclx, acly
-    #def move_position():
+    
+    def move_output(self, keys):
+        aclx, acly = player.move_input(self, keys)
+        self.velx += aclx
+        self.vely += acly
+        if self.velx != 0:
+            if self.velx > 0:
+                self.velx -= backacl
+            else:
+                self.velx += backacl
         
-
-########################################################################        
-player1 = player(0, 0, 0, 0, classes.UP, classes.DOWN, classes.LEFT, classes.RIGHT)
-player2 = player(0, 0, 0, 0, classes.w, classes.s, classes.a, classes.d)
-##############################################################################
-#move
-def move_input(keys):
-    aclx = 0
-    acly = 0
-    if keys[1073741904] and x > 0:#[1073741904]
-        aclx = -acl
-
-    if keys[1073741903] and x < 500:#[1073741903]
-        aclx = acl
-
-    if keys[pygame.K_UP] and y > 0:#[1073741906]
-        acly = -acl
-
-    if keys[pygame.K_DOWN] and y < 500:#[1073741905]
-        acly = acl
-
-    if (aclx**2 + acly**2 > acl * acl):#單位向量
-        aclx *= abs(acl / (math.sqrt(aclx**2 + acly**2)))
-        acly *= abs(acl / (math.sqrt(aclx**2 + acly**2)))
-    return aclx, acly
+        if self.vely != 0:
+            if self.vely > 0:
+                self.vely -= backacl
+            else:
+                self.vely += backacl
+        
+        if (self.velx**2 + self.vely**2 > maxv**2):
+            self.velx *= abs(maxv / (math.sqrt(self.velx**2 + self.vely**2)))
+            self.vely *= abs(maxv / (math.sqrt(self.velx**2 + self.vely**2)))
+        self.x += self.velx
+        self.y += self.vely
+        return (self.x, self.y)
+###########################################################
+player1 = player(0, 0, 0, 0, keyboard.UP, keyboard.DOWN, keyboard.LEFT, keyboard.RIGHT)
+player2 = player(0, 0, 0, 0, keyboard.w, keyboard.s, keyboard.a, keyboard.d)
+###########################################################
 
 #settings
 winScreen = pygame.display.set_mode((S_W, S_H))
@@ -96,31 +89,37 @@ background = pygame.Surface(winScreen.get_size()).convert()
 
 #count the score
 def color_counting(cv):
-  area_value=pygame.surfarray.array2d(cv)
-  red_ar=int(0)
-  blue_ar=int(0)
-  for i in range(500):
-    for j in range(500):
-      if area_value[i][j]==16776960:
-        red_ar+=1
-      
-  return red_ar,blue_ar
+    area_value = pygame.surfarray.pixels2d(cv)
+    red_ar = int(0)
+    blue_ar = int(0)
+    print(area_value)
+    for i in range(100):
+        for j in range(100):
+            if area_value[i*5][j*5] == 16777215:
+              red_ar += 1
+            if area_value[i*5][j*5]==16711680:
+              blue_ar+=1
+
+    return red_ar, blue_ar
 
 counting_time=int(0)
+frame_count=int(0)
 R = 20  #the r of circle
-x = int((S_W) / 2)  #position x
-y = int((S_H) / 2)  #position y
-velx = int(0)
-vely = int(0)
+
 maxv = int(2)
+red_score, b_score =int(0),int(0)
 acl = 0.2
 backacl = 0.05
 time = 0  #time of game
 run = True  #run the game or not
 dfont = pygame.font.SysFont("Arial", 30)
-
+########################RUN##############################
 while run:
-    counting_time+=1
+    if frame_count==0:
+        background.fill(color.white)
+        canvas.fill(color.white)
+    counting_time += 1
+    frame_count+=1
     pygame.time.Clock()
     pygame.time.delay(10)
     uiscreen.blit(background, (0, 0))
@@ -131,55 +130,29 @@ while run:
     #move
     
     keyInput=pygame.key.get_pressed()
-    aclx, acly = move_input(keyInput)
-    velx += aclx
-    vely += acly
-    if velx != 0:
-        if velx > 0:
-            velx -= backacl
-        else:
-            velx += backacl
-    if vely != 0:
-        if vely > 0:
-            vely -= backacl
-        else:
-            vely += backacl
-    if (velx**2 + vely**2 > maxv**2):
-        velx = velx * abs(maxv / (math.sqrt(velx**2 + vely**2)))
-        vely = vely * abs(maxv / (math.sqrt(velx**2 + vely**2)))
-    x += velx
-    y += vely
-    #prevent from going out
-    '''
-    if(x>500 or x<0):
-        #x -= velx
-        #velx=-velx
-        #x=500-x
+    player1.x, player1.y = player1.move_output(keyInput)
+    player2.x, player2.y = player2.move_output(keyInput)
     
-    if(y>500 or y<0):
-        #y -= vely
-        #vely=-vely
-        #y=500-y
-    '''
     #ColorCount
-    if counting_time>500:
-      red_score,b_score=color_counting(canvas)
-      counting_time=int(0)
+    if frame_count%500==0:
+        red_score, b_score = color_counting(canvas)
+        counting_time = int(0)
     if(keyInput[pygame.K_SPACE]):
-      print((red_score))
-      print(f"{type(red_score)}  and  {type(classes.a)}")
+      print((b_score))
+      print(f"{type(red_score)}")
     #Paint
-    pygame.draw.circle(canvas, color.yellow, (x, y), R, R - 1)
-
+    pygame.draw.circle(canvas, color.blue, (player1.x, player1.y), R, R - 1)
+    pygame.draw.circle(canvas, color.red, (player2.x, player2.y), R, R - 1)
     #?
     b_point = int(0)
 
     #UI
-    message = dfont.render('{0},{1}'.format(int(x), int(y)), 1, color.cyan)  
+    message = dfont.render('{0},{1},{2},{3}'.format(int(player1.x), int(player1.y),(red_score/100),(b_score/100)), 1, color.cyan)
     #text of location
     uiscreen.blit(message, (0, 0))
 
-    winScreen.blit(canvas, (0, 0))
+    if frame_count%500!=0:
+      winScreen.blit(canvas, (0, 0))
     winScreen.blit(uiscreen, (0, 0))
      
     #winScreen.blit(michan, (x, y))
