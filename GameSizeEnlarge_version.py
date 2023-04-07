@@ -122,20 +122,7 @@ class Player(pygame.sprite.Sprite):
         if self.y <= 0:
             pygame.draw.circle(background, self.color, (self.x, self.y), Radius, Radius - 1)
             self.y += 745
-
-        # 玩家靜止判斷
-        '''
-        stop = key_pressed[self.go_left] == False and \
-               key_pressed[self.go_right] == False and \
-               key_pressed[self.go_up] == False and \
-               key_pressed[self.go_down] == False
-
-        if stop:
-            backacl = int(1)
-            self.velx, self.vely = 0, 0
-        else:
-            backacl = int(0.5)'''
-
+          
         # 玩家速度變化、座標變化
         self.velx += self.aclx
         self.vely += self.acly
@@ -154,7 +141,12 @@ class Player(pygame.sprite.Sprite):
         if self.velx ** 2 + self.vely ** 2 > maxv ** 2:
             self.velx *= abs(maxv / (math.sqrt(self.velx ** 2 + self.vely ** 2)))
             self.vely *= abs(maxv / (math.sqrt(self.velx ** 2 + self.vely ** 2)))
-
+        
+      # 玩家靜止判斷
+        if -backacl < self.velx < backacl:
+            self.velx = 0
+        elif -backacl < self.vely < backacl:
+            self.vely = 0
         self.x += self.velx
         self.y += self.vely
 
