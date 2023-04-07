@@ -5,10 +5,13 @@ yellow = (255, 255, 0)
 cyan = (0, 255, 255)
 magenta = (255, 0, 255)
 white = (255, 255, 255)
+deepgray = (181,181,181)
 black = (0, 0, 0)
 A5D7E8 = (165, 215, 232)
 FFE2E2 = (255, 226, 226)
 F6F6F6 = (246, 246, 246)
+color_002B5B = (0, 43, 91)
+
 
 red_area_intcode=16777215
 blue_area_intcode=16711680
